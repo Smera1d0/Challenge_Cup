@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自动生成教案工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;  /* 修正：使页面从顶部开始 */
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            width: 100%;
+            max-width: 960px; /* 设置最大宽度为960px */
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            max-height: 95vh;
+            overflow: auto; /* 允许滚动 */
+        }
+        h1 {
+            font-size: 28px;
+            color: #111;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .form-group select, .form-group input, .form-group button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+            transition: all 0.3s ease;
+        }
+        .form-group select:focus, .form-group input:focus, .form-group button:focus {
+            border-color: #262228;
+            outline: none;
+        }
+        .form-group button {
+            background-color: #262228;
+            color: white;
+            cursor: pointer;
+            margin-top: 20px;
+            border: none;
+            font-weight: 600;
+        }
+        .form-group button:hover {
+            background-color: #262228;
+        }
+        .lesson-plan {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            display: none; /* 初始状态为隐藏 */
+            max-height: 500px; /* 限制教案最大高度 */
+            overflow-y: auto; /* 启用纵向滚动条 */
+        }
+        .lesson-plan h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .lesson-plan p {
+            color: #666;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<body>
+
+    <div class="container">
+        <h1>自动生成教案工具</h1>
+        <div class="form-group">
+            <label for="subject">选择学科</label>
+            <select id="subject">
+                <option value="语文">语文</option>
+                <option value="数学">数学</option>
+                <option value="英语">英语</option>
+                <option value="物理">物理</option>
+                <option value="化学">化学</option>
+                <option value="生物">生物</option>
+                <option value="政治">政治</option>
+                <option value="历史">历史</option>
+                <option value="地理">地理</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="grade">选择年级</label>
+            <select id="grade">
+                <option value="一年级">一年级</option>
+                <option value="二年级">二年级</option>
+                <option value="三年级">三年级</option>
+                <option value="四年级">四年级</option>
+                <option value="五年级">五年级</option>
+                <option value="六年级">六年级</option>
+                <option value="初一">初一</option>
+                <option value="初二">初二</option>
+                <option value="初三">初三</option>
+                <option value="高一">高一</option>
+                <option value="高二">高二</option>
+                <option value="高三">高三</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="target">输入教学目标</label>
+            <input type="text" id="target" placeholder="例如：理解《岳阳楼记》的作者背景及文章主题">
+        </div>
+        <div class="form-group">
+            <button id="generateBtn">生成教案</button>
+        </div>
+
+        <div class="lesson-plan" id="lessonPlan">
+            <!-- 生成的教案将显示在这里 -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            // 获取用户输入的学科、年级、教学目标
+            const subject = document.getElementById('subject').value;
+            const grade = document.getElementById('grade').value;
+            const target = document.getElementById('target').value;
+
+            if (!target) {
+                alert('请输入教学目标！');
+                return;
+            }
+
+            // 构造请求体
+            const requestData = {
+                subject: subject,
+                grade: grade,
+                target: target
+            };
+
+            // 发送请求到后端
+            fetch('http://localhost:11434/api/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: "qwen2.5:0.5b",  // 或根据需要调整模型
+                    prompt: `请生成一个${subject}科目，${grade}年级的教案，教学目标是：${target}，要求尽可能详细，包括教学内容、教学方法、教学手段等。注意换行。`,
+                    stream: false
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const lessonPlanMarkdown = data.response;
+
+                if (lessonPlanMarkdown) {
+                    try {
+                        // 使用 marked 渲染 Markdown
+                        const lessonPlanHTML = marked.marked(lessonPlanMarkdown);
+                        const lessonPlanContainer = document.getElementById('lessonPlan');
+                        lessonPlanContainer.innerHTML = lessonPlanHTML;
+                        lessonPlanContainer.style.display = 'block'; // 显示生成的教案
+                    } catch (error) {
+                        console.error('Markdown 渲染出错：', error);
+                        document.getElementById('lessonPlan').innerHTML = '渲染教案时出错，请稍后再试。';
+                    }
+                } else {
+                    document.getElementById('lessonPlan').innerHTML = '未能生成教案，请稍后再试。';
+                }
+            })
+            .catch(error => {
+                console.error('请求出错：', error);
+                alert('请求出错，请稍后再试。');
+            });
+        });
+    </script>
+
+</body>
+</html>
