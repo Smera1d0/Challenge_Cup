@@ -3,39 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>主页</title>
+    <title>AI教学助手</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
-            padding: 50px;
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #34495e;
+            --hover-color: #2980b9;
+            --background-color: #f8f9fa;
         }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: var(--background-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            padding: 40px 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .header {
+            margin-bottom: 50px;
+            padding: 30px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center; /* 添加此行 */
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin: 0;
+            padding: 20px 0;
+            text-align: center; /* 添加此行 */
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8em;
+            margin: 30px 0;
+            padding: 10px;
+            border-bottom: 3px solid var(--primary-color);
+            display: inline-block;
+        }
+
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
         button {
             padding: 15px 30px;
-            font-size: 18px;
-            background-color: #262228;
+            font-size: 16px;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            min-width: 250px;
         }
+
         button:hover {
-            background-color: #0375b4;
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
 <body>
-    <h1>欢迎使用AI教学助手</h1>
-    <h2>教师端</h2>
-    <button onclick="window.location.href='lesson_plan_generator.html';">点击进入教案生成工具</button>
+    <div class="header">
+        <h1>赋能未来：生成式 AI 在教育中的变革力量</h1>
+    </div>
 
-     <!-- 新增按钮，访问学情分析仪表盘 -->
-     <button onclick="window.location.href='dashboard.html';">访问学情分析仪表盘</button>
-     <h3>政府端</h3>
-     <button onclick="window.location.href='government.html';">查看区域AI资源教育地图并使用政策合规性自检工具</button>
-     <h4>政府端</h4>
-     <button onclick="window.location.href='student.html';">进入个性化学习路径推荐系统</button>
-     
+    <div class="container">
+        <div class="section">
+            <h2>教师端</h2>
+            <div class="button-group">
+                <button onclick="window.location.href='lesson_plan_generator.html';">
+                    教案生成工具
+                </button>
+                <button onclick="window.location.href='dashboard.html';">
+                    学情分析仪表盘
+                </button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>政府端</h2>
+            <div class="button-group">
+                <button onclick="window.location.href='government.html';">
+                    AI资源教育地图 & 政策合规性自检
+                </button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>学生端</h2>
+            <div class="button-group">
+                <button onclick="window.location.href='student.html';">
+                    个性化学习路径推荐
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
