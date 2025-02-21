@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>区域AI教育资源智能分析平台</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+    <style>
+        #map { height: 100vh; }
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        .layer-switch { margin-bottom: 15px; }
+        .export-btn { margin-top: 10px; }
+        select[multiple] { width: 100%; height: 100px; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <!-- 控制面板 -->
+    <div class="control-panel">
+        <h3>图层控制</h3>
+        <div class="layer-switch">
+            <h4>基础层</h4>
+            <label><input type="checkbox" checked data-layer="schools"> 学校位置</label><br>
+            <label><input type="checkbox" checked data-layer="devices"> 设备数量</label><br>
+            <label><input type="checkbox" checked data-layer="bandwidth"> 网络带宽</label>
+        </div>
+        
+        <div class="layer-switch">
+            <h4>分析层</h4>
+            <label><input type="checkbox" data-layer="fairness"> 公平指数预警</label><br>
+            <label><input type="checkbox" data-layer="policy"> 政策覆盖率</label>
+        </div>
+
+        <div class="layer-switch">
+            <h4>预测层</h4>
+            <label><input type="checkbox" data-layer="prediction"> 三年资源缺口预测</label>
+        </div>
+
+        <hr>
+        <h3>区域对比</h3>
+        <select id="regions" multiple>
+            <option value="海淀区">海淀区</option>
+            <option value="朝阳区">朝阳区</option>
+            <option value="东城区">东城区</option>
+            <option value="西城区">西城区</option>
+            <option value="丰台区">丰台区</option>
+        </select>
+        <button onclick="compareRegions()">生成对比报告</button>
+
+        <div class="export-btn">
+            <button onclick="exportData('csv')">导出CSV</button>
+            <button onclick="exportData('pdf')">导出PDF</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+    <script>
+        // 地图初始化
+        var map = L.map('map').setView([39.9042, 116.4074], 11);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        // 示例数据
+        var schools = [
+            {name: "第一中学", lat: 39.91, lng: 116.40, devices: 120, bandwidth: 1000, region: "海淀区"},
+            {name: "第二中学", lat: 39.92, lng: 116.41, devices: 80, bandwidth: 500, region: "朝阳区"},
+            {name: "第三中学", lat: 39.93, lng: 116.42, devices: 90, bandwidth: 800, region: "东城区"},
+            {name: "第四中学", lat: 39.94, lng: 116.43, devices: 110, bandwidth: 1200, region: "西城区"},
+            {name: "第五中学", lat: 39.95, lng: 116.44, devices: 70, bandwidth: 400, region: "丰台区"}
+        ];
+
+        // 图层组
+        var layers = {
+            schools: L.layerGroup(), // 学校位置
+            devices: L.layerGroup(), // 设备数量
+            bandwidth: L.layerGroup(), // 网络带宽
+            fairness: L.layerGroup(), // 公平指数预警
+            policy: L.layerGroup(), // 政策覆盖率
+            prediction: L.layerGroup() // 三年资源缺口预测
+        };
+
+        // 初始化学校标记
+        schools.forEach(school => {
+            var marker = L.marker([school.lat, school.lng])
+                .bindPopup(`<b>${school.name}</b><br>
+                            设备数：${school.devices}<br>
+                            带宽：${school.bandwidth}Mbps<br>
+                            区县：${school.region}`);
+            layers.schools.addLayer(marker);
+
+            // 设备数量图层（示例：用圆圈表示设备数量）
+            var deviceCircle = L.circle([school.lat, school.lng], {
+                radius: school.devices * 10, // 缩放比例
+                color: 'blue',
+                fillColor: '#30f',
+                fillOpacity: 0.5
+            }).bindPopup(`设备数量：${school.devices}`);
+            layers.devices.addLayer(deviceCircle);
+
+            // 网络带宽图层（示例：用颜色表示带宽）
+            var bandwidthColor = school.bandwidth >= 1000 ? 'green' : 'orange';
+            var bandwidthCircle = L.circle([school.lat, school.lng], {
+                radius: 500,
+                color: bandwidthColor,
+                fillColor: bandwidthColor,
+                fillOpacity: 0.3
+            }).bindPopup(`带宽：${school.bandwidth}Mbps`);
+            layers.bandwidth.addLayer(bandwidthCircle);
+        });
+
+        // 分析层和预测层的示例数据（可根据实际需求扩展）
+        layers.fairness.addLayer(L.circle([39.91, 116.40], {radius: 1000, color: 'red'})); // 公平指数预警
+        layers.policy.addLayer(L.circle([39.92, 116.41], {radius: 1000, color: 'blue'})); // 政策覆盖率
+        layers.prediction.addLayer(L.circle([39.90, 116.42], {radius: 1000, color: 'purple'})); // 资源缺口预测
+
+        // 默认显示基础层
+        layers.schools.addTo(map);
+        layers.devices.addTo(map);
+        layers.bandwidth.addTo(map);
+
+        // 图层显示/隐藏逻辑
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                var layer = this.getAttribute('data-layer');
+                if (this.checked) {
+                    layers[layer].addTo(map); // 显示图层
+                } else {
+                    layers[layer].removeFrom(map); // 隐藏图层
+                }
+            });
+        });
+
+        // 区域对比功能（支持多选）
+        function compareRegions() {
+            var selectedRegions = Array.from(document.getElementById('regions').selectedOptions)
+                .map(option => option.value);
+
+            if (selectedRegions.length < 2) {
+                alert("请至少选择两个区县进行对比！");
+                return;
+            }
+
+            // 示例对比逻辑
+            var report = "区域对比报告：\n";
+            selectedRegions.forEach(region => {
+                var regionSchools = schools.filter(school => school.region === region);
+                var totalDevices = regionSchools.reduce((sum, school) => sum + school.devices, 0);
+                var totalBandwidth = regionSchools.reduce((sum, school) => sum + school.bandwidth, 0);
+
+                report += `\n${region}：\n` +
+                          `学校数量：${regionSchools.length}\n` +
+                          `设备总数：${totalDevices}\n` +
+                          `总带宽：${totalBandwidth}Mbps\n`;
+            });
+
+            alert(report);
+        }
+
+        // 数据导出功能
+        function exportData(format) {
+            if(format === 'csv'){
+                let csv = Papa.unparse(schools);
+                let blob = new Blob([csv], {type: 'text/csv'});
+                let link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'education_data.csv';
+                link.click();
+            } else if(format === 'pdf'){
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.text("区域教育资源报告", 10, 10);
+                doc.save('report.pdf');
+            }
+        }
+    </script>
+</body>
+</html>
