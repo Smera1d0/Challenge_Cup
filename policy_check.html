@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>政策合规性自检工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        .upload-section, .result-section {
+            margin-bottom: 20px;
+        }
+        .upload-section input[type="file"] {
+            margin-bottom: 10px;
+        }
+        .result-section {
+            display: none;
+        }
+        .highlight {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>政策合规性自检工具</h1>
+        
+        <!-- 上传文件部分 -->
+        <div class="upload-section">
+            <h2>1. 上传地方政策文件</h2>
+            <input type="file" id="policyFile" accept=".pdf,.doc,.docx">
+            <button onclick="uploadFile()">上传并检测</button>
+        </div>
+
+        <!-- 结果显示部分 -->
+        <div class="result-section" id="resultSection">
+            <h2>3. 合规评分</h2>
+            <p>合规评分: <span id="complianceScore">0</span> / 100</p>
+            
+            <h2>4. 违规条款标注</h2>
+            <div id="highlightedText">
+                <!-- 高亮标注的违规条款将显示在这里 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function uploadFile() {
+            const fileInput = document.getElementById('policyFile');
+            const file = fileInput.files[0];
+            
+            if (file) {
+                // 模拟文件上传和AI比对的过程
+                // 这里可以调用后端API进行文件上传和处理
+                // 假设后端返回了合规评分和违规条款
+                const complianceScore = 85; // 假设合规评分为85
+                const violations = [
+                    { text: "未要求AI内容审核", start: 120, end: 130 },
+                    { text: "未明确数据隐私保护措施", start: 250, end: 270 }
+                ];
+
+                // 显示结果部分
+                const resultSection = document.getElementById('resultSection');
+                resultSection.style.display = 'block';
+
+                // 更新合规评分
+                document.getElementById('complianceScore').textContent = complianceScore;
+
+                // 高亮标注违规条款
+                const highlightedText = document.getElementById('highlightedText');
+                highlightedText.innerHTML = violations.map(violation => 
+                    `<p><span class="highlight">${violation.text}</span></p>`
+                ).join('');
+            } else {
+                alert("请先选择一个文件！");
+            }
+        }
+    </script>
+</body>
+</html>
