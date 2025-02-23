@@ -121,6 +121,77 @@
         .advice-section tr:hover {
             background-color: #f0f0f0;
         }
+
+        /* 添加加载动画样式 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .button-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .charts {
+                flex-direction: column;
+            }
+            
+            .chart-container {
+                min-width: 100%;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+
+        /* 添加通知样式 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            opacity: 0.9;
+        }
+
+        .notification.info {
+            background-color: #007bff;
+        }
+
+        .notification.success {
+            background-color: #28a745;
+        }
+
+        .notification.warning {
+            background-color: #ffc107;
+        }
+
+        .notification.error {
+            background-color: #dc3545;
+        }
     </style>
 </head>
 <body>
@@ -154,7 +225,12 @@
         </div>
 
         <div class="form-group">
-            <button id="generateAdviceBtn">生成学习建议</button>
+            <button id="generateAdviceBtn">
+                <div class="button-content">
+                    <div class="loading" style="display: none;"></div>
+                    <span class="btn-text">生成学习建议</span>
+                </div>
+            </button>
         </div>
 
         <div class="advice-section" id="adviceSection">
@@ -163,6 +239,37 @@
     </div>
 
     <script>
+        // 添加图表配置
+        const chartOptions = {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                },
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: '数据分析'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        };
+
         // 热力图数据
         const heatmapData = {
             labels: ['上午', '下午', '晚上'],
@@ -223,52 +330,28 @@
         };
 
         // 创建图表
-        new Chart(document.getElementById('heatmapChart'), {
-            type: 'bar',
-            data: heatmapData,
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        new Chart(document.getElementById('wordCloudChart'), {
-            type: 'pie',
-            data: wordCloudData,
-            options: {
-                responsive: true
-            }
-        });
-
-        new Chart(document.getElementById('scoreWarningChart'), {
-            type: 'line',
-            data: scoreWarningData,
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        new Chart(document.getElementById('learningTrendChart'), {
-            type: 'line',
-            data: learningTrendData,
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+        const charts = [
+            new Chart(document.getElementById('heatmapChart'), {
+                type: 'bar',
+                data: heatmapData,
+                options: chartOptions
+            }),
+            new Chart(document.getElementById('wordCloudChart'), {
+                type: 'pie',
+                data: wordCloudData,
+                options: chartOptions
+            }),
+            new Chart(document.getElementById('scoreWarningChart'), {
+                type: 'line',
+                data: scoreWarningData,
+                options: chartOptions
+            }),
+            new Chart(document.getElementById('learningTrendChart'), {
+                type: 'line',
+                data: learningTrendData,
+                options: chartOptions
+            })
+        ];
 
         // 在 script 标签中添加 marked 配置
         marked.setOptions({
@@ -277,8 +360,18 @@
             tables: true // 启用表格支持
         });
 
-        // 生成建议按钮点击事件
+        // 修改生成建议按钮点击事件
         document.getElementById('generateAdviceBtn').addEventListener('click', function() {
+            const button = this;
+            const btnContent = button.querySelector('.button-content');
+            const loading = button.querySelector('.loading');
+            const btnText = button.querySelector('.btn-text');
+
+            // 显示加载状态
+            button.disabled = true;
+            loading.style.display = 'inline-block';
+            btnText.textContent = '正在生成...';
+
             const analysisData = {
                 heatmap: heatmapData.datasets[0].data,
                 wordCloud: wordCloudData.datasets[0].data,
@@ -313,24 +406,75 @@
                 
                 if (adviceMarkdown) {
                     try {
-                        // 使用配置后的 marked
                         const adviceHTML = marked.parse(adviceMarkdown);
                         const adviceSection = document.getElementById('adviceSection');
                         adviceSection.innerHTML = adviceHTML;
                         adviceSection.style.display = 'block';
+                        showNotification('建议生成成功！', 'success');
                     } catch (error) {
                         console.error('Markdown 渲染出错：', error);
                         document.getElementById('adviceSection').innerHTML = '渲染建议时出错，请稍后再试。';
+                        showNotification('渲染建议时出错', 'error');
                     }
                 } else {
                     document.getElementById('adviceSection').innerHTML = '未能生成建议，请稍后再试。';
+                    showNotification('生成建议失败', 'error');
                 }
             })
             .catch(error => {
                 console.error('请求出错：', error);
-                alert('请求出错，请稍后再试。');
+                showNotification('请求出错，请稍后再试', 'error');
+            })
+            .finally(() => {
+                // 恢复按钮状态
+                button.disabled = false;
+                loading.style.display = 'none';
+                btnText.textContent = '生成学习建议';
             });
         });
+
+        // 添加导出按钮
+        function exportData() {
+            const data = {
+                AI使用频率: heatmapData.datasets[0].data,
+                高频词统计: wordCloudData.datasets[0].data,
+                成绩波动: scoreWarningData.datasets[0].data,
+                学习进度: learningTrendData.datasets[0].data
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '学情分析数据.json';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // 添加通知函数
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function refreshData() {
+            // 模拟获取新数据
+            // 实际项目中这里应该调用后端API
+            heatmapData.datasets[0].data = [
+                Math.floor(Math.random() * 100),
+                Math.floor(Math.random() * 100),
+                Math.floor(Math.random() * 100)
+            ];
+            
+            // 更新图表
+            charts.forEach(chart => chart.update());
+        }
     </script>
 </body>
 </html>
