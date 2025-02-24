@@ -70,7 +70,8 @@
 - **预测层**：按学生增长率模拟未来3年资源缺口预测。
 - **功能细化**：支持通过拖选两个区县生成差距分析报告进行区域对比和CSV/PDF格式的数据导出。
 
-![Uploading d2e2c3c94fa358974c9079d4ac31531.png…]()
+![Uploading 05b10409bcd4f2bb0134ce80be44308.png…]()
+
 
 
 
@@ -117,7 +118,7 @@
 - **个性化路径生成**：基于学科和目标的动态计划生成算法，为每个学生量身打造合适的学习路径。
 - **自适应推荐引擎**：根据模拟数据动态调整推荐策略。
 
-<img width="632" alt="8108d482f00175482068a46fdd4effc" src="https://github.com/user-attachments/assets/bf9cfc8f-fd7e-402f-9345-2cdefe1a16ac" />
+<img width="1245" alt="8108d482f00175482068a46fdd4effc" src="https://github.com/user-attachments/assets/bf9cfc8f-fd7e-402f-9345-2cdefe1a16ac" />
 
 <img width="1245" alt="edaa49e2d99f4003ecd1aae11cbad52" src="https://github.com/user-attachments/assets/bb539fa3-5b11-4f44-97da-c6664739c395" />
 
