@@ -81,6 +81,7 @@
 - 
 - **标注违规条款**：用不同颜色高亮标注，便于地方政府尽快按规修改。
 
+<img width="1245" alt="78437255284aa0ebe3f21011210a938" src="https://github.com/user-attachments/assets/a44bfa7d-9382-4b1e-8bf4-3ec4cbc77374" />
 
 
 ## 技术创新点
@@ -115,6 +116,8 @@
 - **个性化路径生成**：基于学科和目标的动态计划生成算法，为每个学生量身打造合适的学习路径。
 - **自适应推荐引擎**：根据模拟数据动态调整推荐策略。
 
+![Uploading 723b083a8348ee4a41a9b8770932744.png…]()
+<img width="1245" alt="edaa49e2d99f4003ecd1aae11cbad52" src="https://github.com/user-attachments/assets/bb539fa3-5b11-4f44-97da-c6664739c395" />
 
 
 
