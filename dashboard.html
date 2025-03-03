@@ -4,9 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>学情分析仪表盘</title>
+    <!-- 引入字体和图标库 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
+        :root {
+            --primary: #4a6cfa;
+            --primary-light: #eef1ff;
+            --primary-dark: #3a5cda;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -15,9 +35,9 @@
 
         body {
             font-family: 'Inter', Arial, sans-serif;
-            background-color: #f7f7f7;
+            background-color: #f5f7fb;
             color: #333;
-            padding: 40px;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -30,19 +50,64 @@
             max-width: 1200px;
             background-color: #ffffff;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
         }
 
         h1 {
             font-size: 28px;
-            color: #111;
-            text-align: center;
-            margin-bottom: 30px;
+            color: var(--dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1 i {
+            color: var(--primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-button {
+            padding: 8px 16px;
+            background-color: var(--white);
+            color: var(--secondary);
+            border: 1px solid #eee;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .action-button:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .action-button i {
+            font-size: 14px;
         }
 
         .dashboard {
-            margin-top: 40px;
+            margin-top: 20px;
         }
 
         .charts {
@@ -56,43 +121,118 @@
             flex: 1;
             min-width: 300px;
             padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            border: 1px solid #ddd;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid #f0f0f0;
+        }
+
+        .chart-container:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .chart-header i {
+            font-size: 20px;
+            color: var(--primary);
+            width: 24px;
+            text-align: center;
         }
 
         .chart-container h3 {
-            margin-bottom: 15px;
-            color: #333;
+            margin: 0;
+            color: var(--dark);
+            font-size: 18px;
+            font-weight: 600;
         }
 
         .form-group {
-            margin: 20px 0;
+            margin: 30px 0;
         }
 
         .form-group button {
             width: 100%;
-            padding: 12px;
+            padding: 16px;
             font-size: 16px;
-            background-color: #262228;
+            background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(74, 108, 250, 0.2);
+            font-weight: 600;
         }
 
         .form-group button:hover {
-            background-color: #383438;
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(74, 108, 250, 0.3);
+        }
+
+        .form-group button:active {
+            transform: translateY(0);
         }
 
         .advice-section {
             margin-top: 30px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            border: 1px solid #ddd;
+            padding: 25px;
+            background-color: var(--primary-light);
+            border-radius: var(--border-radius);
+            border: 1px solid #e4e9ff;
             display: none;
+            box-shadow: var(--shadow);
+        }
+
+        .advice-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .advice-header i {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .advice-header h2 {
+            margin: 0;
+            color: var(--dark);
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        /* 美化Markdown内容 */
+        .advice-section h1, .advice-section h2, .advice-section h3 {
+            color: var(--primary-dark);
+            margin-top: 18px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .advice-section ul, .advice-section ol {
+            padding-left: 20px;
+            margin: 12px 0;
+        }
+
+        .advice-section li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .advice-section p {
+            margin: 12px 0;
+            line-height: 1.7;
+            color: #444;
         }
 
         /* 添加表格样式 */
@@ -100,26 +240,29 @@
             width: 100%;
             border-collapse: collapse;
             margin: 15px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 0 1px #e4e9ff;
         }
 
         .advice-section th,
         .advice-section td {
-            border: 1px solid #ddd;
-            padding: 8px 12px;
+            border: 1px solid #e4e9ff;
+            padding: 10px 15px;
             text-align: left;
         }
 
         .advice-section th {
-            background-color: #f5f5f5;
-            font-weight: bold;
+            background-color: #f5f7ff;
+            font-weight: 600;
         }
 
         .advice-section tr:nth-child(even) {
-            background-color: #fafafa;
+            background-color: #fafbff;
         }
 
         .advice-section tr:hover {
-            background-color: #f0f0f0;
+            background-color: #f0f4ff;
         }
 
         /* 添加加载动画样式 */
@@ -146,6 +289,10 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
             .charts {
                 flex-direction: column;
             }
@@ -155,11 +302,26 @@
             }
             
             .container {
-                padding: 15px;
+                padding: 20px 15px;
             }
             
             h1 {
-                font-size: 24px;
+                font-size: 22px;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .action-buttons {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .advice-section {
+                padding: 15px;
             }
         }
 
@@ -168,57 +330,116 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 10px 20px;
-            background-color: #333;
-            color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
+            background-color: var(--white);
+            color: var(--dark);
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
             z-index: 1000;
-            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 90%;
+            border-left: 4px solid var(--primary);
+            animation: slideIn 0.3s forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .notification i {
+            font-size: 20px;
         }
 
         .notification.info {
-            background-color: #007bff;
+            border-left-color: var(--info);
+        }
+
+        .notification.info i {
+            color: var(--info);
         }
 
         .notification.success {
-            background-color: #28a745;
+            border-left-color: var(--success);
+        }
+
+        .notification.success i {
+            color: var(--success);
         }
 
         .notification.warning {
-            background-color: #ffc107;
+            border-left-color: var(--warning);
+        }
+
+        .notification.warning i {
+            color: var(--warning);
         }
 
         .notification.error {
-            background-color: #dc3545;
+            border-left-color: var(--danger);
+        }
+
+        .notification.error i {
+            color: var(--danger);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>学情分析仪表盘</h1>
+        <div class="dashboard-header">
+            <h1><i class="fas fa-chart-line"></i> 学情分析仪表盘</h1>
+            <div class="action-buttons">
+                <button class="action-button" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> 刷新数据
+                </button>
+                <button class="action-button" onclick="exportData()">
+                    <i class="fas fa-download"></i> 导出数据
+                </button>
+            </div>
+        </div>
         
         <div class="dashboard">
             <div class="charts">
                 <div class="chart-container">
-                    <h3>学生使用AI热力图</h3>
+                    <div class="chart-header">
+                        <i class="fas fa-fire"></i>
+                        <h3>学生使用AI热力图</h3>
+                    </div>
                     <canvas id="heatmapChart"></canvas>
                 </div>
 
                 <div class="chart-container">
-                    <h3>高频词统计</h3>
+                    <div class="chart-header">
+                        <i class="fas fa-cloud"></i>
+                        <h3>高频词统计</h3>
+                    </div>
                     <canvas id="wordCloudChart"></canvas>
                 </div>
             </div>
 
             <div class="charts">
                 <div class="chart-container">
-                    <h3>成绩波动预警</h3>
+                    <div class="chart-header">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>成绩波动预警</h3>
+                    </div>
                     <canvas id="scoreWarningChart"></canvas>
                 </div>
 
                 <div class="chart-container">
-                    <h3>学习趋势分析</h3>
+                    <div class="chart-header">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>学习趋势分析</h3>
+                    </div>
                     <canvas id="learningTrendChart"></canvas>
                 </div>
             </div>
@@ -228,43 +449,72 @@
             <button id="generateAdviceBtn">
                 <div class="button-content">
                     <div class="loading" style="display: none;"></div>
-                    <span class="btn-text">生成学习建议</span>
+                    <span class="btn-text"><i class="fas fa-magic"></i> 智能生成学习建议</span>
                 </div>
             </button>
         </div>
 
         <div class="advice-section" id="adviceSection">
+            <div class="advice-header">
+                <i class="fas fa-lightbulb"></i>
+                <h2>个性化学习建议</h2>
+            </div>
             <!-- AI生成的建议将显示在这里 -->
         </div>
     </div>
 
     <script>
+        // 设置Chart.js全局样式
+        Chart.defaults.color = '#555';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        
         // 添加图表配置
         const chartOptions = {
             responsive: true,
             plugins: {
                 tooltip: {
                     mode: 'index',
-                    intersect: false
+                    intersect: false,
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    titleColor: '#333',
+                    bodyColor: '#555',
+                    borderColor: '#eee',
+                    borderWidth: 1,
+                    padding: 10,
+                    cornerRadius: 6,
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
                 },
                 legend: {
                     position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: '数据分析'
+                    labels: {
+                        boxWidth: 12,
+                        padding: 20,
+                        font: {
+                            size: 12
+                        }
+                    }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
                     grid: {
-                        color: 'rgba(0, 0, 0, 0.1)'
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        font: {
+                            size: 11
+                        }
                     }
                 },
                 x: {
                     grid: {
                         display: false
+                    },
+                    ticks: {
+                        font: {
+                            size: 11
+                        }
                     }
                 }
             }
@@ -276,8 +526,8 @@
             datasets: [{
                 label: 'AI使用频率',
                 data: [30, 70, 40],
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(74, 108, 250, 0.6)',
+                borderColor: 'rgba(74, 108, 250, 0.8)',
                 borderWidth: 1
             }]
         };
@@ -288,20 +538,13 @@
             datasets: [{
                 data: [120, 95, 75, 130, 90],
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
+                    'rgba(74, 108, 250, 0.7)', 
+                    'rgba(58, 123, 213, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)',
+                    'rgba(255, 159, 64, 0.7)'
                 ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
+                borderWidth: 0
             }]
         };
 
@@ -312,8 +555,11 @@
                 label: '成绩波动',
                 data: [88, 92, 78],
                 fill: false,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
+                borderColor: 'rgb(220, 53, 69)',
+                tension: 0.3,
+                pointBackgroundColor: 'rgb(220, 53, 69)',
+                pointRadius: 5,
+                pointHoverRadius: 7
             }]
         };
 
@@ -323,9 +569,13 @@
             datasets: [{
                 label: '学习进度',
                 data: [50, 65, 70, 85],
-                fill: false,
-                borderColor: 'rgb(153, 102, 255)',
-                tension: 0.1
+                fill: true,
+                backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                borderColor: 'rgb(40, 167, 69)',
+                tension: 0.4,
+                pointBackgroundColor: 'rgb(40, 167, 69)',
+                pointRadius: 4,
+                pointHoverRadius: 6
             }]
         };
 
@@ -337,9 +587,30 @@
                 options: chartOptions
             }),
             new Chart(document.getElementById('wordCloudChart'), {
-                type: 'pie',
+                type: 'doughnut',  // 改为甜甜圈样式
                 data: wordCloudData,
-                options: chartOptions
+                options: {
+                    ...chartOptions,
+                    cutout: '40%',  // 设置中心孔的大小
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2.0,  // 更紧凑的比例
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    },
+                    plugins: {
+                        ...chartOptions.plugins,
+                        legend: {
+                            ...chartOptions.plugins.legend,
+                            position: 'right',
+                            labels: {
+                                boxWidth: 15,  // 更小的图例标记
+                                padding: 15    // 减少图例间距
+                            }
+                        }
+                    }
+                }
             }),
             new Chart(document.getElementById('scoreWarningChart'), {
                 type: 'line',
@@ -370,7 +641,7 @@
             // 显示加载状态
             button.disabled = true;
             loading.style.display = 'inline-block';
-            btnText.textContent = '正在生成...';
+            btnText.innerHTML = '正在生成...';
 
             const analysisData = {
                 heatmap: heatmapData.datasets[0].data,
@@ -408,16 +679,42 @@
                     try {
                         const adviceHTML = marked.parse(adviceMarkdown);
                         const adviceSection = document.getElementById('adviceSection');
-                        adviceSection.innerHTML = adviceHTML;
+                        const adviceContent = adviceSection.querySelector('.advice-header');
+                        
+                        // 清除除了头部外的所有内容
+                        while (adviceSection.lastChild !== adviceContent) {
+                            adviceSection.removeChild(adviceSection.lastChild);
+                        }
+                        
+                        // 添加新的内容
+                        adviceSection.insertAdjacentHTML('beforeend', adviceHTML);
                         adviceSection.style.display = 'block';
-                        showNotification('建议生成成功！', 'success');
+                        
+                        // 平滑滚动到建议区域
+                        adviceSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        
+                        showNotification('学习建议生成成功！', 'success');
                     } catch (error) {
                         console.error('Markdown 渲染出错：', error);
-                        document.getElementById('adviceSection').innerHTML = '渲染建议时出错，请稍后再试。';
+                        document.getElementById('adviceSection').innerHTML = `
+                            <div class="advice-header">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <h2>渲染错误</h2>
+                            </div>
+                            <p>渲染建议时出错，请稍后再试。</p>
+                        `;
+                        adviceSection.style.display = 'block';
                         showNotification('渲染建议时出错', 'error');
                     }
                 } else {
-                    document.getElementById('adviceSection').innerHTML = '未能生成建议，请稍后再试。';
+                    document.getElementById('adviceSection').innerHTML = `
+                        <div class="advice-header">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <h2>生成失败</h2>
+                        </div>
+                        <p>未能生成建议，请稍后再试。</p>
+                    `;
+                    adviceSection.style.display = 'block';
                     showNotification('生成建议失败', 'error');
                 }
             })
@@ -429,7 +726,7 @@
                 // 恢复按钮状态
                 button.disabled = false;
                 loading.style.display = 'none';
-                btnText.textContent = '生成学习建议';
+                btnText.innerHTML = '<i class="fas fa-magic"></i> 智能生成学习建议';
             });
         });
 
@@ -437,9 +734,18 @@
         function exportData() {
             const data = {
                 AI使用频率: heatmapData.datasets[0].data,
-                高频词统计: wordCloudData.datasets[0].data,
-                成绩波动: scoreWarningData.datasets[0].data,
-                学习进度: learningTrendData.datasets[0].data
+                高频词统计: wordCloudData.labels.map((label, index) => ({
+                    词语: label,
+                    频率: wordCloudData.datasets[0].data[index]
+                })),
+                成绩波动: {
+                    考试: scoreWarningData.labels,
+                    分数: scoreWarningData.datasets[0].data
+                },
+                学习进度: {
+                    周次: learningTrendData.labels,
+                    进度: learningTrendData.datasets[0].data
+                }
             };
             
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -449,31 +755,75 @@
             a.download = '学情分析数据.json';
             a.click();
             window.URL.revokeObjectURL(url);
+            
+            showNotification('数据已导出', 'success');
         }
 
         // 添加通知函数
         function showNotification(message, type = 'info') {
+            // 创建通知元素
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
-            notification.textContent = message;
+            
+            // 根据类型添加不同图标
+            let icon = 'info-circle';
+            if (type === 'success') icon = 'check-circle';
+            if (type === 'warning') icon = 'exclamation-circle';
+            if (type === 'error') icon = 'times-circle';
+            
+            notification.innerHTML = `
+                <i class="fas fa-${icon}"></i>
+                <span>${message}</span>
+            `;
+            
             document.body.appendChild(notification);
             
+            // 添加淡出动画
             setTimeout(() => {
-                notification.remove();
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100px)';
+                notification.style.transition = 'opacity 0.5s, transform 0.5s';
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
             }, 3000);
         }
 
         function refreshData() {
             // 模拟获取新数据
-            // 实际项目中这里应该调用后端API
             heatmapData.datasets[0].data = [
-                Math.floor(Math.random() * 100),
-                Math.floor(Math.random() * 100),
-                Math.floor(Math.random() * 100)
+                Math.floor(Math.random() * 80) + 20,
+                Math.floor(Math.random() * 80) + 20, 
+                Math.floor(Math.random() * 80) + 20
+            ];
+            
+            wordCloudData.datasets[0].data = [
+                Math.floor(Math.random() * 100) + 50,
+                Math.floor(Math.random() * 100) + 50,
+                Math.floor(Math.random() * 100) + 50,
+                Math.floor(Math.random() * 100) + 50,
+                Math.floor(Math.random() * 100) + 50
+            ];
+            
+            scoreWarningData.datasets[0].data = [
+                Math.floor(Math.random() * 30) + 70,
+                Math.floor(Math.random() * 30) + 70,
+                Math.floor(Math.random() * 30) + 70
+            ];
+            
+            learningTrendData.datasets[0].data = [
+                Math.floor(Math.random() * 40) + 40,
+                Math.floor(Math.random() * 30) + 50,
+                Math.floor(Math.random() * 20) + 60,
+                Math.floor(Math.random() * 15) + 70
             ];
             
             // 更新图表
             charts.forEach(chart => chart.update());
+            
+            // 显示通知
+            showNotification('数据已刷新', 'info');
         }
     </script>
 </body>

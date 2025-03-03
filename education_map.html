@@ -1,23 +1,271 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
     <title>区域AI教育资源智能分析平台</title>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入字体和图标库 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
     <style>
-        #map { height: 100vh; }
+        :root {
+            --primary: #4a6cfa;
+            --primary-dark: #3a5cda;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --border-radius: 10px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: #333;
+        }
+        
+        #map { 
+            height: 100vh;
+            z-index: 10;
+        }
+        
         .control-panel {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: white;
-            padding: 15px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            background: var(--white);
+            padding: 20px;
+            box-shadow: var(--shadow);
             z-index: 1000;
+            border-radius: var(--border-radius);
+            width: 300px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            transition: var(--transition);
+            border-left: 4px solid var(--primary);
         }
-        .layer-switch { margin-bottom: 15px; }
-        .export-btn { margin-top: 10px; }
-        select[multiple] { width: 100%; height: 100px; }
+        
+        .control-panel h3 {
+            color: var(--dark);
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .control-panel h3 i {
+            margin-right: 8px;
+            color: var(--primary);
+        }
+        
+        .control-panel h4 {
+            color: var(--secondary);
+            font-weight: 500;
+            margin: 12px 0 8px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .control-panel h4 i {
+            margin-right: 8px;
+            color: var(--primary);
+            font-size: 14px;
+        }
+        
+        .layer-switch {
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+        
+        .layer-switch:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .layer-switch label {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .layer-switch input[type="checkbox"] {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            vertical-align: middle;
+            transition: all 0.2s;
+        }
+        
+        input[type="checkbox"]:checked + .custom-checkbox {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        input[type="checkbox"]:checked + .custom-checkbox:after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: -2px;
+            left: 2px;
+            color: white;
+            font-size: 12px;
+        }
+        
+        hr {
+            margin: 15px 0;
+            border: none;
+            height: 1px;
+            background-color: #eee;
+        }
+        
+        select[multiple] {
+            width: 100%;
+            height: 120px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 14px;
+            margin-right: 8px;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(74, 108, 250, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button i {
+            margin-right: 6px;
+        }
+        
+        .compare-btn {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .export-btn {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .export-btn button {
+            flex: 1;
+            margin-right: 8px;
+            background-color: var(--secondary);
+        }
+        
+        .export-btn button:last-child {
+            margin-right: 0;
+        }
+        
+        .export-btn button:hover {
+            background-color: var(--dark);
+        }
+        
+        /* 移动设备适配 */
+        @media (max-width: 768px) {
+            .control-panel {
+                top: auto;
+                bottom: 20px;
+                right: 50%;
+                transform: translateX(50%);
+                max-height: 40vh;
+            }
+        }
+        
+        /* 定制地图信息窗口 */
+        .leaflet-popup-content-wrapper {
+            border-radius: 8px;
+            padding: 8px 0;
+        }
+
+        .leaflet-popup-content {
+            margin: 10px 16px;
+            line-height: 1.6;
+        }
+
+        .leaflet-popup-tip {
+            background: white;
+        }
+
+        .school-info {
+            font-size: 14px;
+        }
+
+        .school-info h3 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 16px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 4px;
+        }
+
+        .school-info p {
+            margin: 4px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .school-info p i {
+            width: 20px;
+            margin-right: 8px;
+            color: var(--secondary);
+        }
     </style>
 </head>
 <body>
@@ -25,27 +273,45 @@
     
     <!-- 控制面板 -->
     <div class="control-panel">
-        <h3>图层控制</h3>
+        <h3><i class="fas fa-layer-group"></i> 图层控制</h3>
         <div class="layer-switch">
-            <h4>基础层</h4>
-            <label><input type="checkbox" checked data-layer="schools"> 学校位置</label><br>
-            <label><input type="checkbox" checked data-layer="devices"> 设备数量</label><br>
-            <label><input type="checkbox" checked data-layer="bandwidth"> 网络带宽</label>
+            <h4><i class="fas fa-map-marker-alt"></i> 基础层</h4>
+            <label>
+                <input type="checkbox" checked data-layer="schools" id="schools-layer">
+                <span class="layer-label"><i class="fas fa-school"></i> 学校位置</span>
+            </label><br>
+            <label>
+                <input type="checkbox" checked data-layer="devices" id="devices-layer">
+                <span class="layer-label"><i class="fas fa-laptop"></i> 设备数量</span>
+            </label><br>
+            <label>
+                <input type="checkbox" checked data-layer="bandwidth" id="bandwidth-layer">
+                <span class="layer-label"><i class="fas fa-wifi"></i> 网络带宽</span>
+            </label>
         </div>
         
         <div class="layer-switch">
-            <h4>分析层</h4>
-            <label><input type="checkbox" data-layer="fairness"> 公平指数预警</label><br>
-            <label><input type="checkbox" data-layer="policy"> 政策覆盖率</label>
+            <h4><i class="fas fa-chart-bar"></i> 分析层</h4>
+            <label>
+                <input type="checkbox" data-layer="fairness" id="fairness-layer">
+                <span class="layer-label"><i class="fas fa-balance-scale"></i> 公平指数预警</span>
+            </label><br>
+            <label>
+                <input type="checkbox" data-layer="policy" id="policy-layer">
+                <span class="layer-label"><i class="fas fa-file-contract"></i> 政策覆盖率</span>
+            </label>
         </div>
 
         <div class="layer-switch">
-            <h4>预测层</h4>
-            <label><input type="checkbox" data-layer="prediction"> 三年资源缺口预测</label>
+            <h4><i class="fas fa-chart-line"></i> 预测层</h4>
+            <label>
+                <input type="checkbox" data-layer="prediction" id="prediction-layer">
+                <span class="layer-label"><i class="fas fa-project-diagram"></i> 三年资源缺口预测</span>
+            </label>
         </div>
 
         <hr>
-        <h3>区域对比</h3>
+        <h3><i class="fas fa-chart-pie"></i> 区域对比</h3>
         <select id="regions" multiple>
             <option value="海淀区">海淀区</option>
             <option value="朝阳区">朝阳区</option>
@@ -53,11 +319,17 @@
             <option value="西城区">西城区</option>
             <option value="丰台区">丰台区</option>
         </select>
-        <button onclick="compareRegions()">生成对比报告</button>
+        <button class="compare-btn" onclick="compareRegions()">
+            <i class="fas fa-exchange-alt"></i> 生成对比报告
+        </button>
 
         <div class="export-btn">
-            <button onclick="exportData('csv')">导出CSV</button>
-            <button onclick="exportData('pdf')">导出PDF</button>
+            <button onclick="exportData('csv')">
+                <i class="fas fa-file-csv"></i> 导出CSV
+            </button>
+            <button onclick="exportData('pdf')">
+                <i class="fas fa-file-pdf"></i> 导出PDF
+            </button>
         </div>
     </div>
 
@@ -89,39 +361,83 @@
             prediction: L.layerGroup() // 三年资源缺口预测
         };
 
+        // 自定义图标
+        var schoolIcon = L.divIcon({
+            html: '<i class="fas fa-school" style="color: #4a6cfa; font-size: 18px;"></i>',
+            className: 'school-marker',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+
         // 初始化学校标记
         schools.forEach(school => {
-            var marker = L.marker([school.lat, school.lng])
-                .bindPopup(`<b>${school.name}</b><br>
-                            设备数：${school.devices}<br>
-                            带宽：${school.bandwidth}Mbps<br>
-                            区县：${school.region}`);
+            var popupContent = `
+                <div class="school-info">
+                    <h3>${school.name}</h3>
+                    <p><i class="fas fa-laptop"></i> 设备数：${school.devices}</p>
+                    <p><i class="fas fa-wifi"></i> 带宽：${school.bandwidth}Mbps</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 区县：${school.region}</p>
+                </div>
+            `;
+            
+            var marker = L.marker([school.lat, school.lng], {icon: schoolIcon})
+                .bindPopup(popupContent);
             layers.schools.addLayer(marker);
 
-            // 设备数量图层（示例：用圆圈表示设备数量）
+            // 设备数量图层（用圆圈表示设备数量）
             var deviceCircle = L.circle([school.lat, school.lng], {
                 radius: school.devices * 10, // 缩放比例
-                color: 'blue',
-                fillColor: '#30f',
-                fillOpacity: 0.5
-            }).bindPopup(`设备数量：${school.devices}`);
+                color: '#4a6cfa',
+                fillColor: '#4a6cfa',
+                fillOpacity: 0.3,
+                weight: 2
+            }).bindPopup(`<div class="school-info"><h3>${school.name}</h3><p><i class="fas fa-laptop"></i> 设备数量：${school.devices}</p></div>`);
             layers.devices.addLayer(deviceCircle);
 
-            // 网络带宽图层（示例：用颜色表示带宽）
-            var bandwidthColor = school.bandwidth >= 1000 ? 'green' : 'orange';
+            // 网络带宽图层（用颜色表示带宽）
+            var bandwidthColor = school.bandwidth >= 1000 ? '#28a745' : '#ffc107';
             var bandwidthCircle = L.circle([school.lat, school.lng], {
                 radius: 500,
                 color: bandwidthColor,
                 fillColor: bandwidthColor,
-                fillOpacity: 0.3
-            }).bindPopup(`带宽：${school.bandwidth}Mbps`);
+                fillOpacity: 0.2,
+                weight: 2
+            }).bindPopup(`<div class="school-info"><h3>${school.name}</h3><p><i class="fas fa-wifi"></i> 带宽：${school.bandwidth}Mbps</p></div>`);
             layers.bandwidth.addLayer(bandwidthCircle);
         });
 
-        // 分析层和预测层的示例数据（可根据实际需求扩展）
-        layers.fairness.addLayer(L.circle([39.91, 116.40], {radius: 1000, color: 'red'})); // 公平指数预警
-        layers.policy.addLayer(L.circle([39.92, 116.41], {radius: 1000, color: 'blue'})); // 政策覆盖率
-        layers.prediction.addLayer(L.circle([39.90, 116.42], {radius: 1000, color: 'purple'})); // 资源缺口预测
+        // 分析层和预测层的示例数据
+        layers.fairness.addLayer(
+            L.circle([39.91, 116.40], {
+                radius: 1000, 
+                color: '#dc3545', 
+                fillColor: '#dc3545', 
+                fillOpacity: 0.2, 
+                weight: 2,
+                dashArray: '5, 5' // 添加虚线边框
+            }).bindPopup('<div class="school-info"><h3>公平指数预警</h3><p><i class="fas fa-exclamation-triangle"></i> 该地区资源分配不均</p></div>')
+        );
+        
+        layers.policy.addLayer(
+            L.circle([39.92, 116.41], {
+                radius: 1000, 
+                color: '#17a2b8', 
+                fillColor: '#17a2b8', 
+                fillOpacity: 0.2, 
+                weight: 2
+            }).bindPopup('<div class="school-info"><h3>政策覆盖率</h3><p><i class="fas fa-file-contract"></i> 政策覆盖率: 85%</p></div>')
+        );
+        
+        layers.prediction.addLayer(
+            L.circle([39.90, 116.42], {
+                radius: 1000, 
+                color: '#6f42c1', 
+                fillColor: '#6f42c1', 
+                fillOpacity: 0.2, 
+                weight: 2,
+                dashArray: '10, 5' // 添加点划线边框
+            }).bindPopup('<div class="school-info"><h3>资源缺口预测</h3><p><i class="fas fa-chart-line"></i> 预计三年内设备需求增长20%</p></div>')
+        );
 
         // 默认显示基础层
         layers.schools.addTo(map);
@@ -150,20 +466,67 @@
                 return;
             }
 
-            // 示例对比逻辑
-            var report = "区域对比报告：\n";
+            // 对比逻辑
+            var reportHTML = `
+                <div style="padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    <h2 style="color: #4a6cfa; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <i class="fas fa-chart-bar"></i> 区域对比报告
+                    </h2>
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                        <thead>
+                            <tr style="background: #f8f9fa;">
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">区域</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">学校数量</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">设备总数</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">总带宽</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
             selectedRegions.forEach(region => {
                 var regionSchools = schools.filter(school => school.region === region);
                 var totalDevices = regionSchools.reduce((sum, school) => sum + school.devices, 0);
                 var totalBandwidth = regionSchools.reduce((sum, school) => sum + school.bandwidth, 0);
 
-                report += `\n${region}：\n` +
-                          `学校数量：${regionSchools.length}\n` +
-                          `设备总数：${totalDevices}\n` +
-                          `总带宽：${totalBandwidth}Mbps\n`;
+                reportHTML += `
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>${region}</strong></td>
+                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">${regionSchools.length}</td>
+                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">${totalDevices}</td>
+                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">${totalBandwidth}Mbps</td>
+                    </tr>
+                `;
             });
 
-            alert(report);
+            reportHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            // 创建漂亮的弹窗
+            var reportDialog = document.createElement('div');
+            reportDialog.style.position = 'fixed';
+            reportDialog.style.top = '0';
+            reportDialog.style.left = '0';
+            reportDialog.style.width = '100%';
+            reportDialog.style.height = '100%';
+            reportDialog.style.backgroundColor = 'rgba(0,0,0,0.5)';
+            reportDialog.style.display = 'flex';
+            reportDialog.style.justifyContent = 'center';
+            reportDialog.style.alignItems = 'center';
+            reportDialog.style.zIndex = '2000';
+            reportDialog.style.padding = '20px';
+            reportDialog.style.backdropFilter = 'blur(5px)';
+
+            reportDialog.innerHTML = reportHTML + `
+                <button style="position: absolute; top: 20px; right: 20px; background: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.1);" onclick="this.parentNode.remove();">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            document.body.appendChild(reportDialog);
         }
 
         // 数据导出功能
@@ -175,12 +538,60 @@
                 link.href = URL.createObjectURL(blob);
                 link.download = 'education_data.csv';
                 link.click();
+                
+                // 显示成功消息
+                showNotification('CSV文件已成功导出');
             } else if(format === 'pdf'){
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 doc.text("区域教育资源报告", 10, 10);
-                doc.save('report.pdf');
+                
+                // 添加表格数据
+                let yPos = 30;
+                doc.text("学校名称", 10, 20);
+                doc.text("区域", 60, 20);
+                doc.text("设备数", 100, 20);
+                doc.text("带宽", 140, 20);
+                
+                schools.forEach(school => {
+                    doc.text(school.name, 10, yPos);
+                    doc.text(school.region, 60, yPos);
+                    doc.text(school.devices.toString(), 100, yPos);
+                    doc.text(school.bandwidth.toString(), 140, yPos);
+                    yPos += 10;
+                });
+                
+                doc.save('education_report.pdf');
+                
+                // 显示成功消息
+                showNotification('PDF报告已成功导出');
             }
+        }
+        
+        // 显示通知
+        function showNotification(message) {
+            var notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.background = '#4a6cfa';
+            notification.style.color = 'white';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '5px';
+            notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+            notification.style.zIndex = '2000';
+            notification.style.transition = 'opacity 0.5s';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 3000);
         }
     </script>
 </body>

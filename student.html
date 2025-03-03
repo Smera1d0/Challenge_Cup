@@ -4,132 +4,411 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI自适应学习系统</title>
+    <!-- 引入Bootstrap图标 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --gray-color: #6c757d;
+        }
+        
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
         header {
-            background-color: #4CAF50;
+            background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 10px 0;
+            padding: 1.5rem 0;
             text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        
+        header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        
         nav {
-            margin: 20px;
-            text-align: center;
+            background-color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
         }
+        
+        nav.scrolled {
+            padding: 0.7rem 0;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
         nav a {
             margin: 0 15px;
             text-decoration: none;
-            color: #333;
+            color: var(--dark-color);
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: all 0.3s ease;
         }
+        
+        nav a:hover {
+            color: var(--primary-color);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            bottom: 0;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
         .container {
-            padding: 20px;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
         }
+        
         .section {
-            margin-bottom: 40px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+        
         .section h2 {
-            color: #4CAF50;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
         }
+        
+        .section h2 i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .section p {
+            color: var(--gray-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
         .feedback, .rewards, .parental-control {
             background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
         }
+        
+        .feedback h3, .rewards h3, .parental-control h3 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feedback h3 i, .rewards h3 i, .parental-control h3 i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .question-input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .question-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+        
+        .response {
+            background-color: #f1f8ff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border-left: 4px solid var(--accent-color);
+            display: none;
+        }
+        
+        .response.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .response ul {
+            padding-left: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .response li {
+            margin-bottom: 0.5rem;
+        }
+        
         footer {
-            background-color: #333;
+            background-color: var(--dark-color);
             color: white;
             text-align: center;
-            padding: 10px 0;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
         }
-        .question-input {
-            width: 80%;
-            padding: 10px;
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            nav a {
+                margin: 0 10px;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* 进度条样式 */
+        .progress-bar {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 1s ease;
+        }
+        
+        .math { background-color: var(--primary-color); }
+        .chinese { background-color: var(--success-color); }
+        .english { background-color: var(--accent-color); }
+        
+        /* 徽章样式 */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 30px;
+            color: white;
+            margin-left: 8px;
+        }
+
+        /* AI响应内容样式 */
+        .ai-content {
+            line-height: 1.6;
+        }
+        
+        .ai-content strong {
+            color: var(--secondary-color);
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+        
+        .list-item {
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .list-bullet {
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+        }
+        
+        .ai-error {
+            background-color: #fff2f0;
+            border-left: 4px solid var(--danger-color);
+            padding: 15px;
+            border-radius: 4px;
+        }
+        
+        .ai-error i {
+            color: var(--danger-color);
+            font-size: 1.5rem;
             margin-bottom: 10px;
         }
-        .response {
-            background-color: #e0f7fa;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
+
+        
+        .badge-primary { background-color: var(--primary-color); }
+        .badge-success { background-color: var(--success-color); }
+        .badge-warning { background-color: var(--warning-color); }
     </style>
 </head>
 <body>
     <header>
-        <h1>AI自适应学习系统</h1>
+        <h1><i class="bi bi-mortarboard-fill"></i> AI自适应学习系统</h1>
+        <p>个性化学习体验，智能教育助手</p>
     </header>
-    <nav>
-        <a href="#adaptive-learning">自适应学习路径</a>
-        <a href="#voice-text-tutoring">语音和文字交互辅导</a>
-        <a href="#feedback-incentives">学习反馈与激励机制</a>
-        <a href="#fair-accessibility">教育公平与可访问性</a>
+    
+    <nav id="main-nav">
+        <div class="nav-container">
+            <a href="#adaptive-learning"><i class="bi bi-diagram-3"></i> 自适应学习路径</a>
+            <a href="#voice-text-tutoring"><i class="bi bi-chat-dots"></i> 智能交互辅导</a>
+            <a href="#feedback-incentives"><i class="bi bi-star"></i> 学习反馈与激励</a>
+            <a href="#fair-accessibility"><i class="bi bi-globe"></i> 教育公平与可访问性</a>
+        </div>
     </nav>
+    
     <div class="container">
         <!-- 自适应学习路径 -->
         <section id="adaptive-learning" class="section">
-            <h2>自适应学习路径</h2>
-            <p>AI根据学生的学习历史、兴趣和能力，生成个性化学习路径。</p>
-            <button onclick="generateLearningPath()">生成学习路径</button>
+            <h2><i class="bi bi-diagram-3"></i> 自适应学习路径</h2>
+            <p>基于AI算法，根据您的学习历史、兴趣爱好和学习能力，为您量身定制个性化学习计划。</p>
+            <button onclick="generateLearningPath()" class="btn"><i class="bi bi-magic"></i> 生成学习路径</button>
             <div id="learning-path" class="response"></div>
         </section>
 
         <!-- 语音和文字交互辅导 -->
         <section id="voice-text-tutoring" class="section">
-            <h2>语音和文字交互辅导</h2>
-            <p>提供智能语音助手，支持学生通过语音与AI互动，解答学科问题。</p>
-            <input type="text" id="question-input" class="question-input" placeholder="输入你的问题">
-            <button onclick="askAI()">提问</button>
+            <h2><i class="bi bi-chat-dots"></i> 智能交互辅导</h2>
+            <p>随时随地提问，AI智能助手为您解答各学科难题，提供个性化解释和辅导。</p>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="question-input" class="question-input" placeholder="输入您的学习问题...">
+                <button onclick="askAI()" class="btn"><i class="bi bi-send"></i> 提问</button>
+            </div>
             <div id="ai-response" class="response"></div>
         </section>
 
         <!-- 学习反馈与激励机制 -->
         <section id="feedback-incentives" class="section">
-            <h2>学习反馈与激励机制</h2>
+            <h2><i class="bi bi-star"></i> 学习反馈与激励机制</h2>
+            
             <div class="feedback">
-                <h3>学习进度追踪与反馈</h3>
-                <p>实时跟踪学生的学习进度，自动生成学习报告。</p>
-                <button onclick="generateProgressReport()">生成学习报告</button>
+                <h3><i class="bi bi-graph-up"></i> 学习进度追踪与反馈</h3>
+                <p>实时掌握学习情况，数据可视化展示进步轨迹。</p>
+                <button onclick="generateProgressReport()" class="btn"><i class="bi bi-clipboard-data"></i> 生成学习报告</button>
                 <div id="progress-report" class="response"></div>
             </div>
+            
             <div class="rewards">
-                <h3>积分与奖励系统</h3>
-                <p>通过完成学习任务获取积分，兑换奖励。</p>
-                <button onclick="earnPoints()">完成任务</button>
+                <h3><i class="bi bi-trophy"></i> 积分与奖励系统</h3>
+                <p>完成学习任务获取积分，兑换各类学习资源和虚拟奖励。</p>
+                <button onclick="earnPoints()" class="btn"><i class="bi bi-check-circle"></i> 完成任务</button>
                 <div id="points-earned" class="response"></div>
             </div>
+            
             <div class="parental-control">
-                <h3>家校联动与学习报告</h3>
-                <p>家长可以实时查看孩子的学习情况。</p>
-                <button onclick="viewParentReport()">查看家长报告</button>
+                <h3><i class="bi bi-people"></i> 家校联动与学习报告</h3>
+                <p>家长可实时查看学习进展，获得专业的学习建议。</p>
+                <button onclick="viewParentReport()" class="btn"><i class="bi bi-file-earmark-text"></i> 查看家长报告</button>
                 <div id="parent-report" class="response"></div>
             </div>
         </section>
 
         <!-- 教育公平与可访问性设计 -->
         <section id="fair-accessibility" class="section">
-            <h2>教育公平与可访问性设计</h2>
-            <p>提供低带宽优化与离线功能，支持特殊教育需求。</p>
-            <button onclick="downloadOfflineResources()">下载离线资源</button>
+            <h2><i class="bi bi-globe"></i> 教育公平与可访问性设计</h2>
+            <p>适配各种网络环境，支持特殊教育需求，让每个学生都能平等获得优质教育资源。</p>
+            <button onclick="downloadOfflineResources()" class="btn"><i class="bi bi-cloud-download"></i> 下载离线资源</button>
             <div id="offline-resources" class="response"></div>
         </section>
     </div>
+    
     <footer>
-        <p>&copy; 2023 AI自适应学习系统. 保留所有权利。</p>
+        <p><i class="bi bi-mortarboard-fill"></i> AI自适应学习系统 &copy; 2023-2025. 保留所有权利。</p>
+        <p>用科技创造教育公平，用智能点亮学习未来</p>
     </footer>
 
     <script>
         // 模拟学生数据
         const studentData = {
-            name: "张三",
+            name: "XXX",
             subjects: {
                 math: { level: "中级", progress: 60 },
                 chinese: { level: "高级", progress: 80 },
@@ -141,63 +420,253 @@
         // 自适应学习路径
         function generateLearningPath() {
             const path = `
-                <p>${studentData.name}的学习路径：</p>
+                <h4>${studentData.name}的个性化学习路径</h4>
                 <ul>
-                    <li>数学：${studentData.subjects.math.level}（建议学习代数与几何）</li>
-                    <li>语文：${studentData.subjects.chinese.level}（建议阅读经典文学作品）</li>
-                    <li>英语：${studentData.subjects.english.level}（建议加强基础词汇与语法）</li>
+                    <li><strong>数学</strong>：${studentData.subjects.math.level} 
+                        <span class="badge badge-primary">推荐</span>
+                        <p>建议学习重点：代数与几何基础，解析几何入门</p>
+                    </li>
+                    <li><strong>语文</strong>：${studentData.subjects.chinese.level}
+                        <p>建议学习重点：古典文学鉴赏，现代文写作技巧</p>
+                    </li>
+                    <li><strong>英语</strong>：${studentData.subjects.english.level}
+                        <span class="badge badge-warning">需加强</span>
+                        <p>建议学习重点：基础词汇积累，语法规则巩固</p>
+                    </li>
                 </ul>
+                <p><i class="bi bi-info-circle"></i> 系统根据您过去3个月的学习表现生成此路径，每周将自动更新。</p>
             `;
             document.getElementById('learning-path').innerHTML = path;
+            document.getElementById('learning-path').classList.add('active');
         }
 
-        // 语音和文字交互辅导
+        // 语音和文字交互辅导功能改造 - 使用本地Qwen2.5 0.5b模型
         function askAI() {
             const question = document.getElementById('question-input').value;
-            const response = `
-                <p>问题：${question}</p>
-                <p>AI回答：这是一个关于“${question}”的示例解答。请参考相关学习资料。</p>
+            if (!question.trim()) return;
+            
+            // 获取回答区域元素
+            const responseDiv = document.getElementById('ai-response');
+            
+            // 显示加载状态
+            responseDiv.innerHTML = `
+                <div style="text-align:center; padding: 20px;">
+                    <div style="display: inline-block; width: 30px; height: 30px; border: 3px solid rgba(67, 97, 238, 0.3); 
+                         border-radius: 50%; border-top-color: var(--primary-color); 
+                         animation: spin 1s ease-in-out infinite;"></div>
+                    <p style="margin-top: 15px;">AI正在思考您的问题...</p>
+                </div>
             `;
-            document.getElementById('ai-response').innerHTML = response;
+            responseDiv.classList.add('active');
+            
+            // 根据学生当前科目级别定制提示词
+            const subjectLevels = Object.entries(studentData.subjects)
+                .map(([subject, data]) => `${subject}(${data.level})`)
+                .join('、');
+            
+            // 调用本地Qwen2.5 0.5b模型API
+            fetch('http://localhost:11434/api/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: "qwen2.5:0.5b",
+                    prompt: `你是一位经验丰富的教育辅导专家，请针对以下学生问题提供详细、友好且易于理解的解答。
+    学生目前的学科水平是: ${subjectLevels}。
+    学生问题: "${question}"
+    
+    请提供以下内容:
+    1. 问题分析: 简要分析这个问题的核心要点
+    2. 详细解答: 步骤清晰的解答，包含必要的例子
+    3. 学习建议: 1-2条针对性的学习建议
+    4. 推荐资源: 1-2个适合学生水平的学习资源
+    
+    请使用生动活泼、富有鼓励性的语言，并使用适合学生现有水平的表述方式。`,
+                    stream: false
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 处理API响应
+                if (data.response) {
+                    // 构建HTML响应
+                    const aiResponse = `
+                        <h4><i class="bi bi-question-circle"></i> 问题</h4>
+                        <p>${question}</p>
+                        <h4><i class="bi bi-robot"></i> AI回答</h4>
+                        <div class="ai-content">${formatAIResponse(data.response)}</div>
+                    `;
+                    responseDiv.innerHTML = aiResponse;
+                } else {
+                    responseDiv.innerHTML = `
+                        <h4><i class="bi bi-question-circle"></i> 问题</h4>
+                        <p>${question}</p>
+                        <div class="ai-error">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <p>抱歉，我无法回答这个问题，请尝试重新提问或换个话题。</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('AI请求出错:', error);
+                responseDiv.innerHTML = `
+                    <h4><i class="bi bi-question-circle"></i> 问题</h4>
+                    <p>${question}</p>
+                    <div class="ai-error">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <p>连接AI助手时遇到问题，请检查网络连接或稍后再试。</p>
+                        <p>错误信息: ${error.message}</p>
+                    </div>
+                `;
+            });
+        }
+        
+        // 格式化AI响应，简单处理markdown格式
+        function formatAIResponse(text) {
+            // 创建包含标题的结构化响应
+            let formattedText = '';
+            
+            // 处理标题为带样式的标题
+            text = text.replace(/#{1,6} (.*?)$/gm, (match, title) => {
+                return `<h5 class="ai-content-heading"><i class="bi bi-bookmark"></i> ${title}</h5>`;
+            });
+            
+            // 改进列表处理
+            text = text.replace(/^\d+\.\s+(.*?)$/gm, '<li>$1</li>');
+            text = text.replace(/^- (.*?)$/gm, '<li>$1</li>');
+            
+            // 将列表项包装在有序或无序列表中
+            text = text.replace(/<li>(.*?)<\/li>/g, (match) => {
+                return `<ul class="ai-list">${match}</ul>`;
+            });
+            
+            // 多个连续ul合并成一个
+            text = text.replace(/<\/ul>\s*<ul class="ai-list">/g, '');
+            
+            // 处理强调
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // 处理段落和换行
+            text = text.replace(/\n\n/g, '</p><p>');
+            text = text.replace(/\n/g, '<br>');
+            
+            return `<p>${text}</p>`;
         }
 
         // 学习进度追踪与反馈
         function generateProgressReport() {
             const report = `
-                <p>${studentData.name}的学习进度：</p>
-                <ul>
-                    <li>数学：${studentData.subjects.math.progress}%</li>
-                    <li>语文：${studentData.subjects.chinese.progress}%</li>
-                    <li>英语：${studentData.subjects.english.progress}%</li>
-                </ul>
+                <h4>${studentData.name}的学习进度报告</h4>
+                <div>
+                    <p><strong>数学</strong>：${studentData.subjects.math.progress}%</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill math" style="width: ${studentData.subjects.math.progress}%"></div>
+                    </div>
+                    
+                    <p><strong>语文</strong>：${studentData.subjects.chinese.progress}%</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill chinese" style="width: ${studentData.subjects.chinese.progress}%"></div>
+                    </div>
+                    
+                    <p><strong>英语</strong>：${studentData.subjects.english.progress}%</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill english" style="width: ${studentData.subjects.english.progress}%"></div>
+                    </div>
+                </div>
+                <p style="margin-top: 15px;"><i class="bi bi-graph-up-arrow"></i> <strong>学习趋势</strong>：语文进步迅速，英语需要加强，数学稳步提升。</p>
             `;
             document.getElementById('progress-report').innerHTML = report;
+            document.getElementById('progress-report').classList.add('active');
         }
 
         // 积分与奖励系统
         function earnPoints() {
             studentData.points += 10;
-            document.getElementById('points-earned').innerHTML = `<p>已获得10智慧币，当前总积分：${studentData.points}。</p>`;
+            const pointsHTML = `
+                <div style="text-align: center;">
+                    <i class="bi bi-coin" style="font-size: 2.5rem; color: #f1c40f;"></i>
+                    <h4>恭喜！任务完成</h4>
+                    <p>获得<strong style="color: #f1c40f;"> 10 </strong>智慧币</p>
+                    <p>当前总积分：<strong>${studentData.points}</strong></p>
+                    <p>再获得<strong> 50 </strong>智慧币可兑换<strong>高级学习资料</strong>！</p>
+                </div>
+            `;
+            document.getElementById('points-earned').innerHTML = pointsHTML;
+            document.getElementById('points-earned').classList.add('active');
         }
 
         // 家校联动与学习报告
         function viewParentReport() {
             const report = `
-                <p>家长报告：</p>
+                <h4>家长学习报告</h4>
+                <p><strong>学生</strong>：${studentData.name}</p>
+                <p><strong>报告生成时间</strong>：${new Date().toLocaleDateString()}</p>
+                
+                <h5 style="margin-top: 15px;"><i class="bi bi-bar-chart-line"></i> 学科进度</h5>
+                <div>
+                    <p><strong>数学</strong>：${studentData.subjects.math.progress}% <span style="color: ${studentData.subjects.math.progress > 60 ? '#2ecc71' : '#e74c3c'};">(${studentData.subjects.math.progress > 60 ? '优秀' : '需加强'})</span></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill math" style="width: ${studentData.subjects.math.progress}%"></div>
+                    </div>
+                    
+                    <p><strong>语文</strong>：${studentData.subjects.chinese.progress}% <span style="color: #2ecc71;">(优秀)</span></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill chinese" style="width: ${studentData.subjects.chinese.progress}%"></div>
+                    </div>
+                    
+                    <p><strong>英语</strong>：${studentData.subjects.english.progress}% <span style="color: #e74c3c;">(需加强)</span></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill english" style="width: ${studentData.subjects.english.progress}%"></div>
+                    </div>
+                </div>
+                
+                <h5 style="margin-top: 15px;"><i class="bi bi-lightbulb"></i> 辅导建议</h5>
                 <ul>
-                    <li>学生姓名：${studentData.name}</li>
-                    <li>数学进度：${studentData.subjects.math.progress}%</li>
-                    <li>语文进度：${studentData.subjects.chinese.progress}%</li>
-                    <li>英语进度：${studentData.subjects.english.progress}%</li>
+                    <li>鼓励孩子英语口语练习，推荐每天15分钟的英语对话。</li>
+                    <li>数学方面可适当增加应用题的训练，提高解题思路。</li>
+                    <li>继续保持语文学习的良好习惯，鼓励课外阅读。</li>
                 </ul>
             `;
             document.getElementById('parent-report').innerHTML = report;
+            document.getElementById('parent-report').classList.add('active');
         }
 
         // 教育公平与可访问性设计
         function downloadOfflineResources() {
-            document.getElementById('offline-resources').innerHTML = "<p>离线资源已下载，包含数学、语文和英语的基础课程。</p>";
+            document.getElementById('offline-resources').innerHTML = `
+                <div style="text-align: center;">
+                    <i class="bi bi-check-circle" style="font-size: 2rem; color: var(--success-color);"></i>
+                    <h4>离线资源已准备就绪！</h4>
+                </div>
+                <p>以下资源已下载至您的设备：</p>
+                <ul>
+                    <li><i class="bi bi-file-earmark-pdf"></i> 数学基础知识点总结 (2.3MB)</li>
+                    <li><i class="bi bi-file-earmark-text"></i> 语文必背古诗文50篇 (1.5MB)</li>
+                    <li><i class="bi bi-file-earmark-music"></i> 英语听力练习音频 (18.7MB)</li>
+                    <li><i class="bi bi-file-earmark-play"></i> 物理实验视频教程 (低带宽版本，45MB)</li>
+                </ul>
+                <p><i class="bi bi-info-circle"></i> 这些资源会在您的设备上保存90天，无需网络即可访问。</p>
+            `;
+            document.getElementById('offline-resources').classList.add('active');
         }
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('main-nav');
+            if (window.scrollY > 10) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
     </script>
 </body>
 </html>

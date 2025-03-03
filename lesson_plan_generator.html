@@ -4,177 +4,291 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI教案生成工具</title>
+    <!-- 添加字体和图标库 -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+        
+        :root {
+            --primary-color: #4a6cfa;
+            --primary-dark: #3a5cda;
+            --text-color: #2d3748;
+            --light-gray: #f7fafc;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 10px;
+        }
+        
         body {
-            font-family: 'Inter', Arial, sans-serif;
-            background-color: #f7f7f7;
-            color: #333;
-            padding: 40px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            padding: 40px 20px;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;  /* 修正：使页面从顶部开始 */
-            height: 100vh;
-            overflow: hidden;
+            align-items: flex-start;
         }
+        
         .container {
             width: 100%;
-            max-width: 960px; /* 设置最大宽度为960px */
+            max-width: 1000px;
             background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-            max-height: 95vh;
-            overflow: auto; /* 允许滚动 */
+            padding: 35px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            max-height: 92vh;
+            overflow: auto;
         }
+        
         h1 {
-            font-size: 28px;
-            color: #111;
+            font-size: 30px;
+            color: var(--text-color);
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+        
+        h1 i {
+            margin-right: 12px;
+            color: var(--primary-color);
+        }
+        
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            position: relative;
         }
+        
         .form-group label {
             display: block;
-            font-size: 16px;
-            color: #555;
-            margin-bottom: 10px;
+            font-size: 15px;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            font-weight: 500;
         }
-        .form-group select, .form-group input, .form-group button {
+        
+        .form-group i.icon {
+            position: absolute;
+            left: 14px;
+            top: 42px;
+            color: #718096;
+        }
+        
+        .form-group select, .form-group input {
             width: 100%;
-            padding: 12px;
+            padding: 12px 14px 12px 42px;
             font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #fafafa;
-            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background-color: #ffffff;
+            transition: all 0.2s ease;
+            color: var(--text-color);
         }
-        .form-group select:focus, .form-group input:focus, .form-group button:focus {
-            border-color: #262228;
+        
+        .form-group select:focus, .form-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 108, 250, 0.15);
             outline: none;
         }
+        
         .form-group button {
-            background-color: #262228;
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            background-color: var(--primary-color);
             color: white;
             cursor: pointer;
-            margin-top: 20px;
             border: none;
+            border-radius: var(--radius);
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
         }
+        
         .form-group button:hover {
-            background-color: #262228;
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
         }
+        
+        .form-group button:active {
+            transform: translateY(0);
+        }
+        
         .lesson-plan {
             margin-top: 30px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            display: none; /* 初始状态为隐藏 */
-            max-height: 500px; /* 限制教案最大高度 */
-            overflow-y: auto; /* 启用纵向滚动条 */
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            display: none;
+            max-height: 500px;
+            overflow-y: auto;
+            box-shadow: var(--shadow-sm);
         }
+        
         .lesson-plan h3 {
-            color: #333;
+            color: var(--primary-color);
+            margin: 20px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+        }
+        
+        .lesson-plan ul {
+            padding-left: 30px;
+            margin: 12px 0;
+        }
+        
+        .lesson-plan li {
             margin-bottom: 10px;
+            line-height: 1.7;
         }
+        
         .lesson-plan p {
-            color: #666;
-            font-size: 16px;
+            line-height: 1.8;
+            margin: 14px 0;
+            color: #4a5568;
         }
-            /* 新增加载动画 */
+        
         .loading {
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(0,0,0,.3);
+            border: 3px solid rgba(255,255,255,0.3);
             border-radius: 50%;
             border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+            animation: spin 0.8s ease-in-out infinite;
             margin-right: 10px;
         }
-
+        
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        /* 优化Markdown渲染样式 */
-        .lesson-plan h3 {
-            color: #262228;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 8px;
-            margin: 20px 0 15px;
+        
+        /* 添加卡片效果和过渡动画 */
+        .form-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
         }
-
-        .lesson-plan ul {
-            padding-left: 30px;
-            margin: 10px 0;
+        
+        .form-card:hover {
+            box-shadow: var(--shadow-md);
         }
-
-        .lesson-plan li {
-            margin-bottom: 8px;
-            line-height: 1.6;
+        
+        /* 添加结果区域的标题 */
+        .result-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
         }
-
-        .lesson-plan p {
-            line-height: 1.8;
-            margin: 12px 0;
+        
+        .result-title i {
+            font-size: 20px;
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+        
+        .result-title h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        /* 添加响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px 20px;
+            }
+            
+            .form-card {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <body>
 
     <div class="container">
-        <h1>AI教案生成工具</h1>
-        <div class="form-group">
-            <label for="subject">选择学科</label>
-            <select id="subject">
-                <option value="语文">语文</option>
-                <option value="数学">数学</option>
-                <option value="英语">英语</option>
-                <option value="物理">物理</option>
-                <option value="化学">化学</option>
-                <option value="生物">生物</option>
-                <option value="政治">政治</option>
-                <option value="历史">历史</option>
-                <option value="地理">地理</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="grade">选择年级</label>
-            <select id="grade">
-                <option value="一年级">一年级</option>
-                <option value="二年级">二年级</option>
-                <option value="三年级">三年级</option>
-                <option value="四年级">四年级</option>
-                <option value="五年级">五年级</option>
-                <option value="六年级">六年级</option>
-                <option value="初一">初一</option>
-                <option value="初二">初二</option>
-                <option value="初三">初三</option>
-                <option value="高一">高一</option>
-                <option value="高二">高二</option>
-                <option value="高三">高三</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="target">输入教学目标</label>
-            <input type="text" id="target" placeholder="例如：理解《岳阳楼记》的作者背景及文章主题">
-        </div>
-        <div class="form-group">
-            <button id="generateBtn">
-                <span class="btn-text">生成教案</span>
-                <div class="loading" style="display: none;"></div>
-            </button>
+        <h1><i class="fas fa-chalkboard-teacher"></i> AI教案生成工具</h1>
+        
+        <div class="form-card">
+            <div class="form-group">
+                <label for="subject">选择学科</label>
+                <i class="fas fa-book icon"></i>
+                <select id="subject">
+                    <option value="语文">语文</option>
+                    <option value="数学">数学</option>
+                    <option value="英语">英语</option>
+                    <option value="物理">物理</option>
+                    <option value="化学">化学</option>
+                    <option value="生物">生物</option>
+                    <option value="政治">政治</option>
+                    <option value="历史">历史</option>
+                    <option value="地理">地理</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="grade">选择年级</label>
+                <i class="fas fa-user-graduate icon"></i>
+                <select id="grade">
+                    <option value="一年级">一年级</option>
+                    <option value="二年级">二年级</option>
+                    <option value="三年级">三年级</option>
+                    <option value="四年级">四年级</option>
+                    <option value="五年级">五年级</option>
+                    <option value="六年级">六年级</option>
+                    <option value="初一">初一</option>
+                    <option value="初二">初二</option>
+                    <option value="初三">初三</option>
+                    <option value="高一">高一</option>
+                    <option value="高二">高二</option>
+                    <option value="高三">高三</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="target">教学目标</label>
+                <i class="fas fa-bullseye icon"></i>
+                <input type="text" id="target" placeholder="例如：理解《岳阳楼记》的作者背景及文章主题">
+            </div>
+            
+            <div class="form-group">
+                <button id="generateBtn">
+                    <div class="loading" style="display: none;"></div>
+                    <span class="btn-text"><i class="fas fa-magic"></i> 生成教案</span>
+                </button>
+            </div>
         </div>
 
         <div class="lesson-plan" id="lessonPlan">
+            <div class="result-title">
+                <i class="fas fa-file-alt"></i>
+                <h2>生成教案</h2>
+            </div>
             <!-- 生成的教案将显示在这里 -->
         </div>
     </div>
@@ -197,7 +311,7 @@
 
             // 显示加载状态
             button.disabled = true;
-            btnText.textContent = '生成中...';
+            btnText.innerHTML = '生成中...'; // 移除了图标，只保留文字
             loading.style.display = 'inline-block';
 
             // 发送请求到后端
@@ -220,14 +334,19 @@
                     try {
                         const lessonPlanHTML = marked.marked(lessonPlanMarkdown);
                         const lessonPlanContainer = document.getElementById('lessonPlan');
-                        lessonPlanContainer.innerHTML = lessonPlanHTML;
+                        lessonPlanContainer.querySelector('.result-title').insertAdjacentHTML('afterend', lessonPlanHTML);
                         lessonPlanContainer.style.display = 'block';
+                        
+                        // 滚动到结果区域
+                        lessonPlanContainer.scrollIntoView({ behavior: 'smooth' });
                     } catch (error) {
                         console.error('Markdown 渲染出错：', error);
-                        document.getElementById('lessonPlan').innerHTML = '渲染教案时出错，请稍后再试。';
+                        document.getElementById('lessonPlan').innerHTML = '<div class="result-title"><i class="fas fa-exclamation-circle"></i><h2>出错了</h2></div><p>渲染教案时出错，请稍后再试。</p>';
+                        document.getElementById('lessonPlan').style.display = 'block';
                     }
                 } else {
-                    document.getElementById('lessonPlan').innerHTML = '未能生成教案，请稍后再试。';
+                    document.getElementById('lessonPlan').innerHTML = '<div class="result-title"><i class="fas fa-exclamation-circle"></i><h2>出错了</h2></div><p>未能生成教案，请稍后再试。</p>';
+                    document.getElementById('lessonPlan').style.display = 'block';
                 }
             })
             .catch(error => {
@@ -237,7 +356,7 @@
             .finally(() => {
                 // 恢复按钮状态
                 button.disabled = false;
-                btnText.textContent = '生成教案';
+                btnText.innerHTML = '<i class="fas fa-magic"></i> 生成教案';
                 loading.style.display = 'none';
             });
         });
