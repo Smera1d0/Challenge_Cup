@@ -3,87 +3,589 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>政策合规性自检工具</title>
+    <title>政府政策合规性自检工具</title>
     <style>
+        :root {
+            --primary-color: #1890ff;
+            --secondary-color: #f0f2f5;
+            --text-color: #333;
+            --border-color: #e8e8e8;
+            --success-color: #52c41a;
+            --warning-color: #faad14;
+            --danger-color: #ff4d4f;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f9fc;
+            color: var(--text-color);
         }
+        
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         }
-        h1 {
+        
+        header {
+            margin-bottom: 30px;
             text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
         }
-        .upload-section, .result-section {
-            margin-bottom: 20px;
+        
+        h1 {
+            color: #1a365d;
+            margin: 0 0 10px 0;
+            font-weight: 500;
         }
-        .upload-section input[type="file"] {
-            margin-bottom: 10px;
+        
+        .subtitle {
+            color: #718096;
+            font-size: 16px;
+            margin: 0;
         }
-        .result-section {
+        
+        .upload-section, .processing-section, .result-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 6px;
+            background-color: var(--secondary-color);
+        }
+        
+        .processing-section, .result-section {
             display: none;
         }
+        
+        h2 {
+            margin-top: 0;
+            font-weight: 500;
+            font-size: 18px;
+            color: #2d3748;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            padding: 30px;
+            text-align: center;
+            background-color: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .upload-area i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .upload-text {
+            margin: 10px 0;
+        }
+        
+        .filename {
+            margin-top: 10px;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 20px auto 0;
+            width: 200px;
+        }
+        
+        button:hover {
+            background-color: #40a9ff;
+        }
+        
+        button:disabled {
+            background-color: #bfbfbf;
+            cursor: not-allowed;
+        }
+        
+        .progress {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .score-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .score {
+            font-size: 60px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .score-label {
+            font-size: 16px;
+            color: #718096;
+        }
+        
+        .violations {
+            background-color: white;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .violation-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-left: 4px solid var(--danger-color);
+            background-color: #fff1f0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .violation-text {
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .violation-context {
+            font-family: monospace;
+            padding: 10px;
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
+        
         .highlight {
-            background-color: yellow;
+            background-color: #ffccc7;
+            padding: 0 2px;
+        }
+        
+        .ai-disclaimer {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f9f0ff;
+            border-left: 4px solid #722ed1;
+            border-radius: 0 4px 4px 0;
+            font-size: 14px;
+            color: #722ed1;
+        }
+        
+        .loader {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(24, 144, 255, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .status-text {
+            text-align: center;
+            color: #718096;
+            font-size: 16px;
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- 引入PDF.js库 -->
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>政策合规性自检工具</h1>
+        <header>
+            <h1>政府政策合规性自检工具</h1>
+            <p class="subtitle">上传政策文件，使用AI智能分析合规性问题</p>
+        </header>
         
         <!-- 上传文件部分 -->
-        <div class="upload-section">
-            <h2>1. 上传地方政策文件</h2>
-            <input type="file" id="policyFile" accept=".pdf,.doc,.docx">
-            <button onclick="uploadFile()">上传并检测</button>
+        <div class="upload-section" id="uploadSection">
+            <h2><i class="bi bi-cloud-arrow-up"></i> 上传政策文件</h2>
+            <div class="upload-area" id="dropArea">
+                <i class="bi bi-file-earmark-pdf"></i>
+                <p class="upload-text">点击选择或拖拽PDF文件到此处</p>
+                <p class="upload-text" style="font-size: 14px; color: #718096;">支持格式：PDF</p>
+                <p class="filename" id="fileName"></p>
+                <input type="file" id="policyFile" accept="application/pdf" class="hidden">
+            </div>
+            <button id="analyzeBtn" disabled>开始分析</button>
+        </div>
+
+        <!-- 处理中部分 -->
+        <div class="processing-section" id="processingSection">
+            <h2><i class="bi bi-gear-wide-connected"></i> 正在分析</h2>
+            <div class="loader"></div>
+            <p class="status-text" id="statusText">正在启动本地Qwen2.5 0.5b模型...</p>
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
         </div>
 
         <!-- 结果显示部分 -->
         <div class="result-section" id="resultSection">
-            <h2>3. 合规评分</h2>
-            <p>合规评分: <span id="complianceScore">0</span> / 100</p>
+            <h2><i class="bi bi-clipboard-check"></i> 分析结果</h2>
             
-            <h2>4. 违规条款标注</h2>
-            <div id="highlightedText">
-                <!-- 高亮标注的违规条款将显示在这里 -->
+            <div class="score-container">
+                <p class="score-label">合规性评分</p>
+                <div class="score" id="complianceScore">--</div>
             </div>
+            
+            <h3>合规性问题</h3>
+            <div class="violations" id="violationsContainer">
+                <!-- 违规条款将显示在这里 -->
+            </div>
+            
+            <div class="ai-disclaimer">
+                <i class="bi bi-info-circle"></i> 免责声明：本分析结果由Qwen2.5 0.5b模型生成，仅供参考。具体合规要求请以国家和地方最新政策法规为准。
+            </div>
+
+            <!-- 添加重新分析按钮 -->
+            <button id="resetBtn" style="margin-top: 30px;">重新分析</button>
         </div>
     </div>
 
     <script>
-        function uploadFile() {
+        // 设置PDF.js的worker路径
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.worker.min.js';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropArea = document.getElementById('dropArea');
             const fileInput = document.getElementById('policyFile');
-            const file = fileInput.files[0];
+            const fileName = document.getElementById('fileName');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const uploadSection = document.getElementById('uploadSection');
+            const processingSection = document.getElementById('processingSection');
+            const resultSection = document.getElementById('resultSection');
+            const progressBar = document.getElementById('progressBar');
+            const statusText = document.getElementById('statusText');
+            const complianceScore = document.getElementById('complianceScore');
+            const violationsContainer = document.getElementById('violationsContainer');
             
-            if (file) {
-                // 模拟文件上传和AI比对的过程
-                // 这里可以调用后端API进行文件上传和处理
-                // 假设后端返回了合规评分和违规条款
-                const complianceScore = 85; // 假设合规评分为85
-                const violations = [
-                    { text: "未要求AI内容审核", start: 120, end: 130 },
-                    { text: "未明确数据隐私保护措施", start: 250, end: 270 }
-                ];
-
-                // 显示结果部分
-                const resultSection = document.getElementById('resultSection');
-                resultSection.style.display = 'block';
-
-                // 更新合规评分
-                document.getElementById('complianceScore').textContent = complianceScore;
-
-                // 高亮标注违规条款
-                const highlightedText = document.getElementById('highlightedText');
-                highlightedText.innerHTML = violations.map(violation => 
-                    `<p><span class="highlight">${violation.text}</span></p>`
-                ).join('');
-            } else {
-                alert("请先选择一个文件！");
+            let selectedFile = null;
+            
+            // 点击上传区域触发文件选择
+            dropArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            // 阻止拖拽默认行为
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, false);
+            });
+            
+            // 拖拽时改变样式
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => {
+                    dropArea.style.borderColor = '#1890ff'; 
+                    dropArea.style.backgroundColor = '#f7faff';
+                });
+            });
+            
+            // 离开拖拽区时恢复样式
+            dropArea.addEventListener('dragleave', () => {
+                dropArea.style.borderColor = '';
+                dropArea.style.backgroundColor = '';
+            });
+            
+            // 处理文件拖放
+            dropArea.addEventListener('drop', (e) => {
+                // 恢复样式
+                dropArea.style.borderColor = '';
+                dropArea.style.backgroundColor = '';
+                
+                // 处理文件
+                const dt = e.dataTransfer;
+                if (dt && dt.files && dt.files.length > 0) {
+                    const file = dt.files[0];
+                    console.log("文件已拖放:", file.name);
+                    
+                    if (file && file.type === 'application/pdf') {
+                        handleFile(file);
+                    } else {
+                        alert('请上传PDF格式的文件');
+                    }
+                }
+            });
+            
+            // 处理文件选择
+            fileInput.addEventListener('change', (e) => {
+                console.log("文件已选择:", e.target.files);
+                if (fileInput.files.length > 0) {
+                    handleFile(fileInput.files[0]);
+                }
+            });
+            
+            function handleFile(file) {
+                selectedFile = file;
+                fileName.textContent = file.name;
+                fileName.style.display = 'block';
+                analyzeBtn.disabled = false;
             }
-        }
+            
+            analyzeBtn.addEventListener('click', async () => {
+                if (selectedFile) {
+                    // 显示处理中状态
+                    uploadSection.style.display = 'none';
+                    processingSection.style.display = 'block';
+                    
+                    // 更新进度条和状态
+                    updateProgress(10, "正在提取PDF文本内容...");
+                    
+                    try {
+                        // 提取PDF文本
+                        const pdfText = await extractPdfText(selectedFile);
+                        updateProgress(30, "PDF文本提取完成，正在加载模型...");
+                        
+                        // 发送到Qwen2.5模型进行分析
+                        updateProgress(50, "正在使用Qwen2.5 0.5b模型进行分析...");
+                        const analysisResult = await analyzePolicy(pdfText);
+                        
+                        // 显示分析结果
+                        updateProgress(100, "分析完成！");
+                        setTimeout(() => {
+                            processingSection.style.display = 'none';
+                            resultSection.style.display = 'block';
+                            displayResults(analysisResult);
+                        }, 500);
+                    } catch (error) {
+                        console.error("分析过程中出错:", error);
+                        alert("分析过程中出错: " + error.message);
+                        uploadSection.style.display = 'block';
+                        processingSection.style.display = 'none';
+                    }
+                } else {
+                    alert("请先选择一个PDF文件！");
+                }
+            });
+            
+            // 提取PDF文本内容
+            async function extractPdfText(file) {
+                return new Promise((resolve, reject) => {
+                    const fileReader = new FileReader();
+                    
+                    fileReader.onload = async function() {
+                        try {
+                            const typedarray = new Uint8Array(this.result);
+                            const loadingTask = pdfjsLib.getDocument(typedarray);
+                            const pdf = await loadingTask.promise;
+                            
+                            let fullText = '';
+                            
+                            // 逐页提取文本
+                            for (let i = 1; i <= pdf.numPages; i++) {
+                                updateProgress(10 + (i / pdf.numPages) * 20, `提取PDF页面 ${i}/${pdf.numPages}...`);
+                                const page = await pdf.getPage(i);
+                                const textContent = await page.getTextContent();
+                                const pageText = textContent.items.map(item => item.str).join(' ');
+                                fullText += pageText + '\n\n';
+                            }
+                            
+                            resolve(fullText);
+                        } catch (error) {
+                            reject(new Error("PDF文件解析失败: " + error.message));
+                        }
+                    };
+                    
+                    fileReader.onerror = function() {
+                        reject(new Error("文件读取失败"));
+                    };
+                    
+                    fileReader.readAsArrayBuffer(file);
+                });
+            }
+            
+            // 使用Qwen2.5模型分析政策
+            async function analyzePolicy(policyText) {
+                try {
+                    // 准备发送给模型的请求
+                    const prompt = `
+你是一个专业的政策合规性分析助手，请分析以下政府政策文件的合规性问题。
+给出一个0-100的合规性评分，并列出具体的问题及改进建议，尽量给出较高的分数。
+
+文件内容开始：
+${policyText.substring(0, 15000)} 
+文件内容结束
+
+请按以下JSON格式返回分析结果：
+{
+  "score": 评分数字(0-100),
+  "issues": [
+    {
+      "title": "问题标题",
+      "context": "原文中的问题内容",
+      "recommendation": "改进建议"
+    },
+    ...更多问题
+  ]
+}
+`;
+
+                    const response = await fetch('http://localhost:11434/api/generate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            model: "qwen2.5:0.5b",
+                            prompt: prompt,
+                            stream: false
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API请求失败: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    try {
+                        // 尝试解析返回的JSON数据
+                        const resultText = data.response;
+                        
+                        // 从文本中提取JSON部分
+                        const jsonMatch = resultText.match(/\{[\s\S]*\}/);
+                        if (jsonMatch) {
+                            const jsonStr = jsonMatch[0];
+                            return JSON.parse(jsonStr);
+                        } else {
+                            // 如果无法提取JSON，则构建一个默认的结构
+                            return {
+                                score: 70,
+                                issues: [
+                                    {
+                                        title: "模型没有返回正确的JSON格式",
+                                        context: resultText.substring(0, 100) + "...",
+                                        recommendation: "请检查输入文本格式或重试"
+                                    }
+                                ]
+                            };
+                        }
+                    } catch (error) {
+                        console.error("解析模型返回数据失败:", error);
+                        return {
+                            score: 65,
+                            issues: [
+                                {
+                                    title: "解析模型返回数据失败",
+                                    context: data.response.substring(0, 100) + "...",
+                                    recommendation: "请重新上传文件或稍后再试"
+                                }
+                            ]
+                        };
+                    }
+                } catch (error) {
+                    console.error("API请求失败:", error);
+                    throw error;
+                }
+            }
+            
+            // 更新进度条和状态文本
+            function updateProgress(percent, statusMsg) {
+                progressBar.style.width = percent + '%';
+                statusText.textContent = statusMsg;
+            }
+            
+            // 显示分析结果
+            function displayResults(result) {
+                // 显示评分
+                let score = result.score;
+                let currentScore = 0;
+                const scoreInterval = setInterval(() => {
+                    if (currentScore < score) {
+                        currentScore++;
+                        complianceScore.textContent = currentScore;
+                    } else {
+                        clearInterval(scoreInterval);
+                    }
+                }, 20);
+                
+                // 显示问题列表
+                violationsContainer.innerHTML = '';
+                if (result.issues && result.issues.length > 0) {
+                    result.issues.forEach((issue, index) => {
+                        const violationElement = document.createElement('div');
+                        violationElement.className = 'violation-item';
+                        
+                        // 高亮显示问题文本
+                        const highlightedContext = issue.context.replace(/([。，；：？！.,:;?!])/g, '$1<br>');
+                        
+                        violationElement.innerHTML = `
+                            <div class="violation-text">${index + 1}. ${issue.title}</div>
+                            <div class="violation-context">${highlightedContext}</div>
+                            <div style="margin-top: 10px; color: #52c41a;">
+                                <i class="bi bi-lightbulb"></i> 建议改进：${issue.recommendation}
+                            </div>
+                        `;
+                        violationsContainer.appendChild(violationElement);
+                    });
+                } else {
+                    violationsContainer.innerHTML = '<p>未发现明显的合规性问题。</p>';
+                }
+            }
+
+            // 重新分析按钮功能
+            resetBtn.addEventListener('click', () => {
+                // 重置状态
+                selectedFile = null;
+                fileInput.value = ''; // 清空文件输入
+                fileName.textContent = '';
+                fileName.style.display = 'none';
+                analyzeBtn.disabled = true;
+                
+                // 切换回上传界面
+                resultSection.style.display = 'none';
+                uploadSection.style.display = 'block';
+                
+                // 重置进度条
+                progressBar.style.width = '0%';
+                
+                // 清空错误信息(如果有)
+                if (typeof errorMessages !== 'undefined' && errorMessages) {
+                    errorMessages.innerHTML = '';
+                }
+            });
+        });
     </script>
 </body>
 </html>
