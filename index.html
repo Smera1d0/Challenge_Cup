@@ -4,12 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>赋能未来：生成式 AI 在教育中的变革力量</title>
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #4a90e2;
-            --secondary-color: #34495e;
-            --hover-color: #2980b9;
+            --primary-color: #3a7bd5;
+            --secondary-color: #00d2ff;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --hover-color: #2574a9;
             --background-color: #f8f9fa;
+            --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         body {
@@ -21,6 +27,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            color: var(--dark-color);
+            line-height: 1.6;
         }
 
         .container {
@@ -31,103 +39,182 @@
         }
 
         .header {
-            margin-bottom: 50px;
-            padding: 30px 0;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            margin-bottom: 60px;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #1a5cb0, #0088cc); /* 更深的蓝色渐变 */
             color: white;
             width: 100%;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center; /* 添加此行 */
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.15)); /* 增加了暗度 */
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
         }
 
         h1 {
-            font-size: 2.5em;
+            font-size: 2.6em;
             margin: 0;
-            padding: 20px 0;
-            text-align: center; /* 添加此行 */
+            padding: 20px 10px;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 10px auto 0;
         }
 
         h2 {
-            color: var(--secondary-color);
+            color: var(--dark-color);
             font-size: 1.8em;
-            margin: 30px 0;
-            padding: 10px;
+            margin: 30px 0 20px;
+            padding: 0 0 10px 0;
             border-bottom: 3px solid var(--primary-color);
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .section {
-            margin: 30px 0;
-            padding: 20px;
+            margin: 40px 0;
+            padding: 30px;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-5px);
         }
 
         .button-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 25px;
             justify-content: center;
+            margin-top: 30px;
         }
 
         button {
-            padding: 15px 30px;
+            padding: 16px 30px;
             font-size: 16px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
+            background-color: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             min-width: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            gap: 10px;
         }
 
         button:hover {
-            background-color: var(--hover-color);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding: 25px;
+            width: 100%;
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            text-align: center;
+            font-size: 0.9em;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2em;
+            }
+            
+            button {
+                min-width: 100%;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .button-group {
+                gap: 15px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>赋能未来：生成式 AI 在教育中的变革力量</h1>
+        <div class="header-content">
+            <h1>赋能未来：生成式 AI 在教育中的变革力量</h1>
+        </div>
     </div>
 
     <div class="container">
         <div class="section">
-            <h2>教师端</h2>
+            <h2><i class="fas fa-chalkboard-teacher"></i>教师端</h2>
             <div class="button-group">
                 <button onclick="window.location.href='lesson_plan_generator.html';">
-                    教案生成工具
+                    <i class="fas fa-book"></i>教案生成工具
                 </button>
                 <button onclick="window.location.href='dashboard.html';">
-                    学情分析仪表盘
+                    <i class="fas fa-chart-line"></i>学情分析仪表盘
                 </button>
             </div>
         </div>
 
         <div class="section">
-            <h2>政府端</h2>
+            <h2><i class="fas fa-landmark"></i>政府端</h2>
             <div class="button-group">
                 <button onclick="window.location.href='education_map.html';">
-                    AI资源教育地图
+                    <i class="fas fa-map-marked-alt"></i>AI资源教育地图
+                </button>
                 <button onclick="window.location.href='policy_check.html';">
-                    政策合规性自检
+                    <i class="fas fa-clipboard-check"></i>政策合规性自检
                 </button>
             </div>
         </div>
 
         <div class="section">
-            <h2>学生端</h2>
+            <h2><i class="fas fa-user-graduate"></i>学生端</h2>
             <div class="button-group">
                 <button onclick="window.location.href='student.html';">
-                    个性化学习路径推荐
+                    <i class="fas fa-road"></i>个性化学习路径推荐
                 </button>
             </div>
         </div>
     </div>
+
+    <footer class="footer">
+        <p>© 2025 生成式AI教育平台 | 赋能教育的未来</p>
+    </footer>
 </body>
 </html>
